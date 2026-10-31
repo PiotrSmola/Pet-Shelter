@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pet extends Model
 {
     use HasFactory;
-
-    protected $table = 'pets';
-
-    protected $primaryKey = 'id';
 
     protected $fillable = [
         'name',
@@ -31,7 +29,24 @@ class Pet extends Model
     }
 
     public function vaccinations()
-{
-    return $this->hasMany(Vaccination::class, 'pet_id');
-}
+    {
+        return $this->hasMany(Vaccination::class, 'pet_id');
+    }
+
+    public function scopeAvailable(Builder $query): void
+    {
+        $query->whereDoesntHave('adoptions', function (Builder $query) {
+            $query->whereIn('status', Adoption::BLOCKING_STATUSES);
+        });
+    }
+
+    public function isAvailable(): bool
+    {
+        return ! $this->adoptions()->whereIn('status', Adoption::BLOCKING_STATUSES)->exists();
+    }
+
+    protected function photoUrl(): Attribute
+    {
+        return Attribute::get(fn () => asset('storage/' . $this->photo_path));
+    }
 }

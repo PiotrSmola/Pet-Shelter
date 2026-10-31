@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 20);
             $table->string('last_name', 30);
-            $table->string('phone_number', 15)->check('phone_number ~ \'^[0-9]+$\'');
+            $table->string('phone_number', 15);
             $table->string('email', 100)->unique();
             $table->char('password', 60);
             $table->set('role', ['customer', 'admin'])->default('customer');

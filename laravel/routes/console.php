@@ -1,8 +1,12 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
+use App\Models\Adoption;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+Artisan::command('adoptions:expire-reservations', function () {
+    $count = Adoption::expireReservations();
+    $this->info("Cancelled {$count} expired reservation(s).");
+})->purpose('Cancel reservations whose 48 h hold has expired');
+
+Schedule::command('adoptions:expire-reservations')->everyFifteenMinutes();

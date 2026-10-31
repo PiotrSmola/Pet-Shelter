@@ -9,10 +9,6 @@ class Vaccination extends Model
 {
     use HasFactory;
 
-    protected $table = 'vaccinations';
-
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'pet_id',
         'vaccination_date',

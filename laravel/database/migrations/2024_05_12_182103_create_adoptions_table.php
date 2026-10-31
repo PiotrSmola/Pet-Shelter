@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pet_id');
             $table->unsignedBigInteger('customer_id');
-            $table->date('adoption_date')->default(now())->check('adoption_date >= "2020-01-01" AND adoption_date <= CURRENT_DATE');
+            $table->date('adoption_date');
             $table->enum('status', ['reserved', 'completed', 'cancelled']);
             $table->foreign('pet_id')->references('id')->on('pets')->onDelete('cascade');
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
