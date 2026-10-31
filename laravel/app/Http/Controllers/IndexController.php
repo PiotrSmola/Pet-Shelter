@@ -4,35 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Pet;
 
-
 class IndexController extends Controller
 {
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
-{
-    $availablePets = Pet::whereDoesntHave('adoptions', function ($query) {
-        $query->whereIn('status', ['reserved', 'completed']);
-    })->take(6)->get();
-
-    $totalPets = Pet::count();
-    $adoptedPetsCount = Pet::whereHas('adoptions', function ($query) {
-        $query->where('status', 'completed');
-    })->count();
-
-    return view('index', compact('availablePets', 'totalPets', 'adoptedPetsCount'));
-}
-
-    public function regulamin()
     {
-        return view('regulamin'); 
+        $featuredPets = Pet::available()->latest('id')->take(6)->get();
+
+        $recentlyAdopted = Pet::whereHas('adoptions', fn ($query) => $query->where('status', 'completed'))
+            ->withMax(['adoptions as adopted_at' => fn ($query) => $query->where('status', 'completed')], 'adoption_date')
+            ->orderByDesc('adopted_at')
+            ->take(6)
+            ->get();
+
+        $stats = [
+            'total' => Pet::count(),
+            'available' => Pet::available()->count(),
+            'adopted' => Pet::whereHas('adoptions', fn ($query) => $query->where('status', 'completed'))->count(),
+        ];
+
+        return view('index', compact('featuredPets', 'recentlyAdopted', 'stats'));
     }
 
-    public function aboutUs()
+    public function regulations()
     {
-        return view('about'); 
+        return view('regulations');
+    }
+
+    public function about()
+    {
+        return view('about');
     }
 }

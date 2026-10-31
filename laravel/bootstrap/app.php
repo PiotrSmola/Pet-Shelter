@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\ExpireReservations;
+use App\Http\Middleware\IsAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias(['admin' => IsAdmin::class]);
+        $middleware->web(append: [ExpireReservations::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

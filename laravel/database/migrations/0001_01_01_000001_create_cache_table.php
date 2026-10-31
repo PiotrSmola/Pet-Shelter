@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function run(): void
+    public function up(): void
     {
         Schema::create('cache', function (Blueprint $table) {
             $table->string('key')->primary();
@@ -24,7 +24,7 @@ return new class extends Migration
         });
     }
 
-    public function drop(): void
+    public function down(): void
     {
         Schema::dropIfExists('cache');
         Schema::dropIfExists('cache_locks');

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('vaccinations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pet_id');
-            $table->date('vaccination_date')->default(now())->check('vaccination_date >= "2020-01-01" AND vaccination_date <= CURRENT_DATE');
+            $table->date('vaccination_date');
             $table->string('vaccine_type', 50);
             $table->string('batch_number', 10);
             $table->foreign('pet_id')->references('id')->on('pets')->onDelete('cascade');

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('pets', function (Blueprint $table) {
             $table->id();
             $table->string('name', 20);
-            $table->string('species', 20)->check('length(species) <= 20');
-            $table->string('breed', 50)->check('length(breed) <= 50');
+            $table->string('species', 20);
+            $table->string('breed', 50);
             $table->tinyInteger('age')->unsigned();
-            $table->decimal('weight', 10, 1)->unsigned()->default(1.0)->check('weight > 0');
+            $table->decimal('weight', 10, 1)->unsigned()->default(1.0);
             $table->string('photo_path', 100);
             $table->string('description', 250);
         });

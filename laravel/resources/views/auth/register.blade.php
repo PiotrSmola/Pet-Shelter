@@ -1,128 +1,89 @@
-@include('layouts.html')
+@extends('layouts.app')
 
-@include('layouts.head', ['pageTitle' => 'Pet Shelter - Registration'])
-<head>
-    <style>
-        .marginbig {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-height: 75.5vh;
-        }
+@section('title', 'Create an account')
 
-        .custom-btn {
-            background-color: rgb(1, 144, 172);
-            color: black;
-            border: none; 
-            font-size: 1.3rem;
-            font-weight: 500;
-            padding: 0.5rem 1.5rem;
-        }
-        .custom-btn:hover {
-            background-color: rgb(2, 137, 11);
-            color: white;
-        }
-    </style>
-</head>
+@php
+    // Text field helper data: name => [label, type, autocomplete, extra attributes]
+    $fields = [
+        'name' => ['First name', 'text', 'given-name', 'maxlength="20"'],
+        'last_name' => ['Last name', 'text', 'family-name', 'maxlength="30"'],
+        'email' => ['E-mail', 'email', 'email', 'maxlength="100"'],
+        'phone_number' => ['Phone number', 'tel', 'tel', 'maxlength="15" inputmode="numeric" pattern="[0-9]*"'],
+    ];
+@endphp
 
-<body>
-    @include('layouts.navbar')
-    @include('layouts.session-error')
-    
-    <div class="container mt-5 mb-5 marginbig">
-        <div class="row mt-4 mb-4 text-center">
-            <div class="col-12">
-                <img src="{{ asset('storage/icons/register.svg') }}" alt="Logo" class="img-fluid" style="max-width: 130px; margin-bottom: 25px;">
-                <h1>Register Now</h1>
+@section('content')
+    <div class="container page page--narrow">
+        <header class="page-header">
+            <div>
+                <h1 class="page-header__title">Create an account</h1>
+                <p class="page-header__subtitle">You'll need an account to adopt or reserve an animal.</p>
             </div>
-        </div>
-    
-        @include('layouts.validation-error')
-    
-        <div class="row d-flex justify-content-center">
-            <div class="col-10 col-sm-10 col-md-6 col-lg-4">
-                <form method="POST" action="{{ route('register') }}" class="needs-validation" novalidate>
-                    @csrf
-                    <div class="form-group mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="last_name" class="form-label">Last Name</label>
-                        <input id="last_name" name="last_name" type="text" class="form-control @error('last_name') is-invalid @enderror" value="{{ old('last_name') }}" required>
-                        @error('last_name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="phone_number" class="form-label">Phone number</label>
-                        <input id="phone_number" name="phone_number" type="text" class="form-control @error('phone_number') is-invalid @enderror" value="{{ old('phone_number') }}" required>
-                        @error('phone_number')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="email" class="form-label">E-mail</label>
-                        <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-3">
+        </header>
+
+        <div class="panel">
+            <form method="POST" action="{{ route('register.store') }}" novalidate>
+                @csrf
+
+                <div class="row g-3">
+                    @foreach ($fields as $field => [$label, $type, $autocomplete, $extra])
+                        <div class="{{ in_array($field, ['name', 'last_name'], true) ? 'col-sm-6' : 'col-12' }}">
+                            <label for="{{ $field }}" class="form-label">{{ $label }}</label>
+                            <input id="{{ $field }}" name="{{ $field }}" type="{{ $type }}"
+                                class="form-control @error($field) is-invalid @enderror"
+                                value="{{ old($field) }}" autocomplete="{{ $autocomplete }}" {!! $extra !!} required
+                                @if ($loop->first) autofocus @endif
+                                @if ($field === 'phone_number') aria-describedby="phone-help{{ $errors->has($field) ? ' ' . $field . '-error' : '' }}"
+                                @elseif ($errors->has($field)) aria-describedby="{{ $field }}-error" @endif
+                                @error($field) aria-invalid="true" @enderror>
+                            @if ($field === 'phone_number')
+                                <div class="form-text" id="phone-help">Digits only, e.g. 123456789.</div>
+                            @endif
+                            @error($field)
+                                <div class="invalid-feedback" id="{{ $field }}-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    @endforeach
+
+                    <div class="col-12">
                         <label for="password" class="form-label">Password</label>
-                        <input id="password" name="password" type="password" class="form-control @error('password') is-invalid @enderror" required>
+                        <p class="form-text mt-0 mb-2" id="password-help">At least 8 characters, with upper and lower case letters, a number and a symbol.</p>
+                        <div class="password-field">
+                            <input id="password" name="password" type="password" class="form-control @error('password') is-invalid @enderror"
+                                autocomplete="new-password" minlength="8" required
+                                aria-describedby="password-help{{ $errors->has('password') ? ' password-error' : '' }}"
+                                @error('password') aria-invalid="true" @enderror>
+                            <button type="button" class="password-toggle" data-password-toggle aria-controls="password" aria-label="Show password">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
                         @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block" id="password-error">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="password_confirmation" class="form-label">Confirm password</label>
-                        <input id="password_confirmation" name="password_confirmation" type="password" class="form-control" required>
+
+                    <div class="col-12">
+                        <label for="password_confirmation" class="form-label">Repeat password</label>
+                        <div class="password-field">
+                            <input id="password_confirmation" name="password_confirmation" type="password" class="form-control"
+                                autocomplete="new-password" required>
+                            <button type="button" class="password-toggle" data-password-toggle aria-controls="password_confirmation" aria-label="Show password">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="text-center mt-4 mb-4">
-                        <button class="btn custom-btn" type="submit">Register</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+
+                <p class="form-text mt-3 mb-0">
+                    By creating an account you accept the <a href="{{ route('regulations') }}">shelter regulations</a>.
+                </p>
+
+                <button type="submit" class="btn btn-primary w-100 mt-4">Create account</button>
+            </form>
         </div>
+
+        <p class="text-center text-muted mt-4 mb-0">
+            Already have an account? <a href="{{ route('login') }}">Log in</a>
+        </p>
     </div>
-
-@include('layouts.footer', ['fixedBottom' => false])
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form.needs-validation');
-        form.addEventListener('submit', function (event) {
-            const password = document.getElementById('password');
-            const passwordConfirm = document.getElementById('password_confirmation');
-            const phoneNumber = document.getElementById('phone_number');
-            let valid = true;
-
-            if (password.value !== passwordConfirm.value) {
-                passwordConfirm.setCustomValidity('Passwords do not match.');
-                valid = false;
-            } else {
-                passwordConfirm.setCustomValidity('');
-            }
-
-            const phoneNumberPattern = /^[0-9]+$/;
-            if (!phoneNumberPattern.test(phoneNumber.value)) {
-                phoneNumber.setCustomValidity('Phone number can only contain digits.');
-                valid = false;
-            } else {
-                phoneNumber.setCustomValidity('');
-            }
-
-            if (!valid) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        });
-    });
-</script>
-    
-</body>
-</html>
+@endsection
