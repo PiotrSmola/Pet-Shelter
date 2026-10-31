@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="site-footer__bottom">
-            <span>&copy; {{ date('Y') }} Pet Shelter – Piotr Smoła</span>
+            <span>&copy; {{ date('Y') }} Pet Shelter, Piotr Smoła</span>
             <ul>
                 <li><a href="{{ route('about') }}">About</a></li>
                 <li><a href="{{ route('regulations') }}">Regulations</a></li>

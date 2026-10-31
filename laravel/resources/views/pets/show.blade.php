@@ -90,7 +90,7 @@
                                 <li><strong>Reserve</strong> holds {{ $pet->name }} for you for 48 hours while you decide.</li>
                             </ul>
                         @elseif (!$isAvailable)
-                            <p class="pet-detail__note"><i class="bi bi-info-circle" aria-hidden="true"></i> Not available — this animal already has a home or is reserved.</p>
+                            <p class="pet-detail__note"><i class="bi bi-info-circle" aria-hidden="true"></i> Not available. This animal already has a home or is reserved.</p>
                         @elseif (Auth::user()->isAdmin())
                             <p class="pet-detail__note"><i class="bi bi-info-circle" aria-hidden="true"></i> Admin accounts can't adopt or reserve animals.</p>
                         @endif
