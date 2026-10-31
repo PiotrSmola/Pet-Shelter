@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Shell history files (e.g. tinker run inside Docker)
+psysh_history
+.config/
